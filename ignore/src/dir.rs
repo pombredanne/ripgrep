@@ -127,7 +127,6 @@ struct IgnoreInner {
 
 impl Ignore {
     /// Return the directory path of this matcher.
-    #[allow(dead_code)]
     pub fn path(&self) -> &Path {
         &self.0.dir
     }

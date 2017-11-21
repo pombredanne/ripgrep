@@ -125,7 +125,7 @@ sherlock:be, to a very large extent, the result of luck. Sherlock Holmes
 
 sherlock!(with_heading, |wd: WorkDir, mut cmd: Command| {
     // This forces the issue since --with-filename is disabled by default
-    // when searching one fil.e
+    // when searching one file.
     cmd.arg("--with-filename").arg("--heading");
     let lines: String = wd.stdout(&mut cmd);
     let expected = "\
@@ -262,6 +262,20 @@ sherlock!(replace_named_groups, "(?P<first>[A-Z][a-z]+) (?P<last>[A-Z][a-z]+)",
 For the Watsons, Doctor of this world, as opposed to the Sherlock
 be, to a very large extent, the result of luck. Holmes, Sherlock
 but Watson, Doctor has to have it taken out for him and dusted,
+";
+    assert_eq!(lines, expected);
+});
+
+sherlock!(replace_with_only_matching, "of (\\w+)",
+|wd: WorkDir, mut cmd: Command| {
+    cmd.arg("-o").arg("-r").arg("$1");
+    let lines: String = wd.stdout(&mut cmd);
+    let expected = "\
+this
+detective
+luck
+straw
+cigar
 ";
     assert_eq!(lines, expected);
 });
@@ -1014,12 +1028,15 @@ fn regression_210() {
     let badutf8 = OsStr::from_bytes(&b"foo\xffbar"[..]);
 
     let wd = WorkDir::new("regression_210");
-    let mut cmd = wd.command();
-    wd.create(badutf8, "test");
-    cmd.arg("-H").arg("test").arg(badutf8);
+    // APFS does not support creating files with invalid UTF-8 bytes.
+    // https://github.com/BurntSushi/ripgrep/issues/559
+    if wd.try_create(badutf8, "test").is_ok() {
+        let mut cmd = wd.command();
+        cmd.arg("-H").arg("test").arg(badutf8);
 
-    let out = wd.output(&mut cmd);
-    assert_eq!(out.stdout, b"foo\xffbar:test\n".to_vec());
+        let out = wd.output(&mut cmd);
+        assert_eq!(out.stdout, b"foo\xffbar:test\n".to_vec());
+    }
 }
 
 // See: https://github.com/BurntSushi/ripgrep/issues/228
@@ -1127,6 +1144,29 @@ clean!(regression_493, " 're ", "input.txt", |wd: WorkDir, mut cmd: Command| {
 
     let lines: String = wd.stdout(&mut cmd);
     assert_eq!(lines, " 're \n");
+});
+
+// See: https://github.com/BurntSushi/ripgrep/issues/599
+clean!(regression_599, "^$", "input.txt", |wd: WorkDir, mut cmd: Command| {
+    wd.create("input.txt", "\n\ntest\n");
+    cmd.args(&[
+        "--color", "ansi",
+        "--colors", "path:none",
+        "--colors", "line:none",
+        "--colors", "match:fg:red",
+        "--colors", "match:style:nobold",
+        "--line-number",
+    ]);
+
+    let lines: String = wd.stdout(&mut cmd);
+    // Technically, the expected output should only be two lines, but:
+    // https://github.com/BurntSushi/ripgrep/issues/441
+    let expected = "\
+[m1[m:[m[31m[m
+[m2[m:[m[31m[m
+[m4[m:
+";
+    assert_eq!(expected, lines);
 });
 
 // See: https://github.com/BurntSushi/ripgrep/issues/1

@@ -1,10 +1,10 @@
 ripgrep (rg)
 ------------
-`ripgrep` is a line oriented search tool that combines the usability of The
-Silver Searcher (similar to `ack`) with the raw speed of GNU grep. `ripgrep`
-works by recursively searching your current directory for a regex pattern.
-`ripgrep` has first class support on Windows, Mac and Linux, with binary
-downloads available for
+`ripgrep` is a line-oriented search tool that recursively searches your current
+directory for a regex pattern while respecting your gitignore rules. To a first
+approximation, ripgrep combines the usability of The Silver Searcher (similar
+to `ack`) with the raw speed of GNU grep. `ripgrep` has first class support on
+Windows, macOS and Linux, with binary downloads available for
 [every release](https://github.com/BurntSushi/ripgrep/releases).
 
 [![Linux build status](https://travis-ci.org/BurntSushi/ripgrep.svg?branch=master)](https://travis-ci.org/BurntSushi/ripgrep)
@@ -47,7 +47,7 @@ for a very detailed comparison with more benchmarks and analysis.
 
 Here's another benchmark that disregards gitignore files and searches with a
 whitelist instead. The corpus is the same as in the previous benchmark, and the
-flags passed to each command ensures that they are doing equivalent work:
+flags passed to each command ensure that they are doing equivalent work:
 
 | Tool | Command | Line count | Time |
 | ---- | ------- | ---------- | ---- |
@@ -57,7 +57,7 @@ flags passed to each command ensures that they are doing equivalent work:
 
 (`ucg` [has slightly different behavior in the presence of symbolic links](https://github.com/gvansickle/ucg/issues/106).)
 
-And finally, a straight up comparison between ripgrep and GNU grep on a single
+And finally, a straight-up comparison between ripgrep and GNU grep on a single
 large file (~9.3GB,
 [`OpenSubtitles2016.raw.en.gz`](http://opus.lingfil.uu.se/OpenSubtitles2016/mono/OpenSubtitles2016.raw.en.gz)):
 
@@ -77,7 +77,7 @@ increases the times to `3.081s` for ripgrep and `11.403s` for GNU grep.
 * Like The Silver Searcher, `ripgrep` defaults to recursive directory search
   and won't search files ignored by your `.gitignore` files. It also ignores
   hidden and binary files by default. `ripgrep` also implements full support
-  for `.gitignore`, where as there are many bugs related to that functionality
+  for `.gitignore`, whereas there are many bugs related to that functionality
   in The Silver Searcher.
 * `ripgrep` can search specific types of files. For example, `rg -tpy foo`
   limits your search to Python files and `rg -Tjs foo` excludes Javascript
@@ -93,7 +93,7 @@ increases the times to `3.081s` for ripgrep and `11.403s` for GNU grep.
   specifically specified with the `-E/--encoding` flag.)
 
 In other words, use `ripgrep` if you like speed, filtering by default, fewer
-bugs and Unicode support.
+bugs, and Unicode support.
 
 ### Why shouldn't I use `ripgrep`?
 
@@ -102,7 +102,7 @@ give you a glimpse at some important downsides or missing features of
 `ripgrep`.
 
 * `ripgrep` uses a regex engine based on finite automata, so if you want fancy
-  regex features such as backreferences or look around, `ripgrep` won't give
+  regex features such as backreferences or lookaround, `ripgrep` won't provide
   them to you. `ripgrep` does support lots of things though, including, but not
   limited to: lazy quantification (e.g., `a+?`), repetitions (e.g., `a{2,5}`),
   begin/end assertions (e.g., `^\w+$`), word boundaries (e.g., `\bfoo\b`), and
@@ -146,15 +146,19 @@ Summarizing, `ripgrep` is fast because:
 
 The binary name for `ripgrep` is `rg`.
 
-[Binaries for `ripgrep` are available for Windows, Mac and
-Linux.](https://github.com/BurntSushi/ripgrep/releases) Linux binaries are
-static executables. Windows binaries are available either as built with MinGW
-(GNU) or with Microsoft Visual C++ (MSVC). When possible, prefer MSVC over GNU,
-but you'll need to have the
-[Microsoft VC++ 2015 redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
+**[Archives of precompiled binaries for `ripgrep` are available for Windows,
+macOS and Linux.](https://github.com/BurntSushi/ripgrep/releases)** Users of
+platforms not explicitly mentioned below (such as Debian and Ubuntu) are advised
+to download one of these archives.
+
+Linux binaries are static executables. Windows binaries are available either as
+built with MinGW (GNU) or with Microsoft Visual C++ (MSVC). When possible,
+prefer MSVC over GNU, but you'll need to have the [Microsoft VC++ 2015
+redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
 installed.
 
-If you're a **Mac OS X Homebrew** user, then you can install ripgrep either
+If you're a **macOS Homebrew** or a **Linuxbrew** user,
+then you can install ripgrep either
 from homebrew-core, (compiled with rust stable, no SIMD):
 
 ```
@@ -209,9 +213,12 @@ $ nix-env --install ripgrep
 $ # (Or using the attribute name, which is also `ripgrep`.)
 ```
 
-If you're a **Rust programmer**, `ripgrep` can be installed with `cargo`. Note
-that the minimum supported version of Rust for ripgrep is **1.17**, although
-ripgrep may work with older versions.
+If you're a **Rust programmer**, `ripgrep` can be installed with `cargo`.
+* Note that the minimum supported version of Rust for ripgrep is **1.17**,
+  although ripgrep may work with older versions.
+* Note that the binary may be bigger than expected because it contains debug
+  symbols. This is intentional. To remove debug symbols and therefore reduce
+  the file size, run `strip` on the binary.
 
 ```
 $ cargo install ripgrep
@@ -222,7 +229,7 @@ $ cargo install ripgrep
 
 ### Whirlwind tour
 
-The command line usage of `ripgrep` doesn't differ much from other tools that
+The command-line usage of `ripgrep` doesn't differ much from other tools that
 perform a similar function, so you probably already know how to use `ripgrep`.
 The full details can be found in `rg --help`, but let's go on a whirlwind tour.
 
@@ -232,7 +239,7 @@ Coloring works on Windows too! Colors can be controlled more granularly with
 the `--color` flag.
 
 One last thing before we get started: generally speaking, `ripgrep` assumes the
-input is reading is UTF-8. However, if ripgrep notices a file is encoded as
+input it is reading to be UTF-8. However, if ripgrep notices a file is encoded as
 UTF-16, then it will know how to search it. For other encodings, you'll need to
 explicitly specify them with the `-E/--encoding` flag.
 
@@ -377,7 +384,7 @@ If your machine doesn't support AVX instructions, then simply remove
 
 ### Running tests
 
-`ripgrep` is relatively well tested, including both unit tests and integration
+`ripgrep` is relatively well-tested, including both unit tests and integration
 tests. To run the full test suite, use:
 
 ```
@@ -392,8 +399,8 @@ from the repository root.
 
 ##### Powershell Profile
 
-To customize powershell on start-up there is a special powershell script that has to be created.
-In order to find its location type `$profile`
+To customize powershell on start-up, there is a special powershell script that has to be created.
+In order to find its location, type `$profile`
 See [more](https://technet.microsoft.com/en-us/library/bb613488(v=vs.85).aspx) for profile details.
 
 Any powershell code in this file gets evaluated at the start of console.
@@ -455,6 +462,19 @@ that the console will use for printing to UTF-8 with
 will also reset when PowerShell is restarted, so you can add that line
 to your profile as well if you want to make the setting permanent.
 
+#### How do I make the output look like ag's?
+
+Use the `--colors` flag, like so:
+
+    rg --colors line:fg:yellow      \
+       --colors line:style:bold     \
+       --colors path:fg:green       \
+       --colors path:style:bold     \
+       --colors match:fg:black      \
+       --colors match:bg:yellow     \
+       --colors match:style:nobold  \
+       foo
+
 ### Known issues
 
 #### I just hit Ctrl+C in the middle of ripgrep's output and now my terminal's foreground color is wrong!
@@ -480,3 +500,26 @@ was later deprecated in
 available [here][msys issue explanation].
 
 [msys issue explanation]: https://github.com/BurntSushi/ripgrep/issues/281#issuecomment-269093893
+
+#### When I run `rg` it executes some other command!
+
+It's likely that you have a shell alias or even another tool called `rg` which
+is interfering with `ripgrep` — run `which rg` to see what it is.
+
+(Notably, the `rails` plug-in for
+[Oh My Zsh](https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#rails) sets
+up an `rg` alias for `rails generate`.)
+
+Problems like this can be resolved in one of several ways:
+
+* If you're using the OMZ `rails` plug-in, disable it by editing the `plugins`
+  array in your zsh configuration.
+* Temporarily bypass an existing `rg` alias by calling `ripgrep` as
+  `command rg`, `\rg`, or `'rg'`.
+* Temporarily bypass an existing alias or another tool named `rg` by calling
+  `ripgrep` by its full path (e.g., `/usr/bin/rg` or `/usr/local/bin/rg`).
+* Permanently disable an existing `rg` alias by adding `unalias rg` to the
+  bottom of your shell configuration file (e.g., `.bash_profile` or `.zshrc`).
+* Give `ripgrep` its own alias that doesn't conflict with other tools/aliases by
+  adding a line like the following to the bottom of your shell configuration
+  file: `alias ripgrep='command rg'`
