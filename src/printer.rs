@@ -28,7 +28,7 @@ impl<'m, 'r> From<&'m Match<'r>> for Offset {
     }
 }
 
-/// CountingReplacer implements the Replacer interface for Regex,
+/// `CountingReplacer` implements the Replacer interface for Regex,
 /// and counts how often replacement is being performed.
 struct CountingReplacer<'r> {
     replace: &'r [u8],
@@ -397,7 +397,7 @@ impl<W: WriteColor> Printer<W> {
             self.line_number(line_number, b'-');
         }
         if self.max_columns.map_or(false, |m| end - start > m) {
-            self.write(format!("[Omitted long context line]").as_bytes());
+            self.write(b"[Omitted long context line]");
             self.write_eol();
             return;
         }
@@ -408,7 +408,7 @@ impl<W: WriteColor> Printer<W> {
     }
 
     fn separator(&mut self, sep: &[u8]) {
-        self.write(&sep);
+        self.write(sep);
     }
 
     fn write_path_sep(&mut self, sep: u8) {
